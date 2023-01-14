@@ -1,0 +1,39 @@
+.App {
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.game-board {
+  width: 1408px;
+  height: 800px;
+  background-image: url(../src/images/Game-Map.png);
+  background-size: 1408px 800px;
+  border: 1px solid #ccc;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+
+.player {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 1;
+}
+
+#player-0 {
+  background-color: blue;
+}
+#player-1 {
+  background-color: red ;
+}
+#player-2 {
+  background-color: green;
+}
+#player-3 {
+  background-color: yellow;
+}
