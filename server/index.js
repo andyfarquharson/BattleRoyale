@@ -14,7 +14,7 @@ server.listen(3001, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3002",
     method: ["GET", "POST"],
   },
 });
@@ -26,6 +26,7 @@ io.on("connection", (socket) => {
 
   // Add the new player to the game state
   players[socket.id] = { x: 0, y: 0, health: 100 };
+
 
   socket.on("move", (data) => {
     // Update the player's position in the game state

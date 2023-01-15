@@ -1,22 +1,63 @@
 import "./App.scss";
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
+// import { useSprite } from "react-sprite-animator";
+import styled, { keyframes } from 'styled-components'
+// import spriteImage from "./images/CharAni-Sheet4.png"
+
+import spritePageRight from './moveRight.png'
+import spritePageLeft from './moveLeft.png'
+import spritePageUp from './moveUp.png'
+import spritePageDown from './moveDown.png'
 
 const socket = io.connect("http://localhost:3001");
-const MAX_X_BOARDER = 1344;
-const MAX_Y_BOARDER = 736;
+const MAX_X_BOARDER = 1331;
+const MAX_Y_BOARDER = 733;
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
+
+const animation = keyframes`
+  100% { background-position: -1000px; }
+`;
+
+    const SpriteDown = styled.div`
+      height: 30px;
+      width: 36px;
+      position: absolute;
+      background: url(${spritePageDown}) left top;
+      animation: ${animation} .4s steps(2) infinite; 
+    `;    
+    const SpriteUp = styled.div`
+      height: 30px;
+      width: 36px;
+      position: absolute;
+      background: url(${spritePageUp}) left top;
+      animation: ${animation} .4s steps(2) infinite; 
+    `;
+    const SpriteRight = styled.div`
+      height: 30px;
+      width: 36px;
+      position: absolute;
+      background: url(${spritePageRight}) left top;
+      animation: ${animation} .4s steps(2) infinite; 
+    `;
+    const SpriteLeft = styled.div`
+      height: 29px;
+      width: 36px;
+      position: absolute;
+      background: url(${spritePageLeft}) left top;
+      animation: ${animation} .4s steps(2) infinite; 
+    `;
 
 function App() {
   const [players, setPlayers] = useState({});
   const [playerId, setPlayerId] = useState(null);
   const [playerDirection, setPlayerDirection] = useState("down");
   const [playerPosition, setPlayerPosition] = useState({
-    x: getRandomInt(800),
-    y: getRandomInt(600),
+    x: getRandomInt(800) + 32,
+    y: getRandomInt(600) + 144,
   });
 
   useEffect(() => {
@@ -71,7 +112,6 @@ function App() {
   function handleKeyPress(event) {
     if (event.keyCode === 37) {
       movePlayer("left");
-      //changeSprite('left')
       console.log("Left");
     } else if (event.keyCode === 38) {
       movePlayer("up");
@@ -88,7 +128,7 @@ function App() {
     let newX = playerPosition.x;
     let newY = playerPosition.y;
    
-    if (direction === "left" && playerPosition.x > 32) {
+    if (direction === "left" && playerPosition.x > 40) {
         newX -= 16;
     } else if (playerPosition.y > 144 && direction === "up") {
       newY -= 16;
@@ -101,7 +141,7 @@ function App() {
     setPlayers((prevPlayers) => {
       return {
         ...prevPlayers,
-        [playerId]: { ...prevPlayers[playerId], x: newX, y: newY },
+        [playerId]: { ...prevPlayers[playerId], x: newX, y: newY, direction: direction },
       };
     });
     setPlayerPosition({ x: newX, y: newY });
@@ -119,6 +159,7 @@ function App() {
   function handleAttack(x, y) {
     socket.emit("attack", { x, y });
   }
+
   function updatePlayerPosition(data) {
     setPlayers({
       ...players,
@@ -139,19 +180,44 @@ function App() {
     setPlayers(newPlayers);
   }
 
+  const getSprite = (dir, key) => {
+    if (dir === 'up') {
+      return (
+          <SpriteUp key={key}/>
+      )
+    } else if (dir === 'down') {
+      return (
+          <SpriteDown key={key}/>
+      )
+    } else if (dir === 'left') {
+      return (
+          <SpriteLeft key={key}/>
+      )
+    } else if (dir === 'right') {
+      return (
+          <SpriteRight key={key}/>
+      )
+    };
+  };
+
+
+
   return (
     <div className="App">
       <div className="game-board">
-        {Object.values(players).map((player, i) => (
-          <div
-            key={player.id}
-            className="player"
-            id={`player-${i}`}
-            style={{ left: `${player.x}px`, top: `${player.y}px` 
-          
-          }}
-          ></div>
-        ))}
+        {Object.values(players).map((player, i) => {
+          const sprite = getSprite(player.direction, player.id);
+            return(
+              <div
+                key={player.id}
+                className="player"
+                id={`player-${i}`}
+                style={{ left: `${player.x}px`, top: `${player.y}px`}}
+              >
+                {sprite}
+              </div>
+            )
+        })}
       </div>
     </div>
   );
