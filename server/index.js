@@ -21,11 +21,29 @@ const io = new Server(server, {
 
 let players = {};
 
+const getRandomColour = () => {
+  return "#" + Math.floor(Math.random() * 16777215).toString(16);
+};
+console.log("getRandomColour", getRandomColour());
+
 io.on("connection", (socket) => {
   console.log("A player has connected: ", socket.id);
+  // assign colour to random player
+  let colour = getRandomColour();
 
   // Add the new player to the game state
-  players[socket.id] = { x: 0, y: 0, health: 100 };
+  players[socket.id] = { x: 0, y: 0, health: 100, colour: colour };
+
+  // Send the current state of players to the new player
+  socket.emit("existingPlayers", players);
+
+  io.emit("newPlayer", {
+    id: socket.id,
+    x: 0,
+    y: 0,
+    health: 100,
+    colour: colour,
+  });
 
   socket.on("move", (data) => {
     // Update the player's position in the game state

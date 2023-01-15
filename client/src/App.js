@@ -17,11 +17,11 @@ function App() {
   const [players, setPlayers] = useState({});
   const [playerId, setPlayerId] = useState(null);
   const [playerDirection, setPlayerDirection] = useState("down");
-  const [playerAttack, setPlayerAttack] = useState()
+  const [playerAttack, setPlayerAttack] = useState();
   const [gameover, setGameOver] = useState(false);
   const [playerPosition, setPlayerPosition] = useState({
     x: getRandom(32, MAX_X_BOARDER),
-    y: getRandom(32, MAX_Y_BOARDER),
+    y: getRandom(144, MAX_Y_BOARDER),
   });
 
   useEffect(() => {
@@ -29,15 +29,39 @@ function App() {
       setPlayerId(socket.id);
       setPlayers((prevPlayers) => {
         return {
-        ...prevPlayers,
-        [socket.id]: { x: playerPosition.x, y: playerPosition.y, health: 100, direction: playerDirection },
-        }
+          ...prevPlayers,
+          [socket.id]: {
+            x: playerPosition.x,
+            y: playerPosition.y,
+            health: 100,
+            direction: playerDirection,
+            colour: prevPlayers.colour,
+          },
+        };
       });
       socket.emit("newPlayer", {
         id: socket.id,
         x: playerPosition.x,
         y: playerPosition.y,
-        direction: playerDirection
+        direction: playerDirection,
+      });
+    });
+
+    socket.on("existingPlayers", (data) => {
+      setPlayers(data);
+    });
+    // Handle new player
+    socket.on("newPlayer", (data) => {
+      setPlayers((prevPlayers) => {
+        return {
+          ...prevPlayers,
+          [data.id]: {
+            x: data.x,
+            y: data.y,
+            health: data.health,
+            colour: data.colour,
+          },
+        };
       });
     });
 
@@ -95,9 +119,9 @@ function App() {
   function movePlayer(direction) {
     let newX = playerPosition.x;
     let newY = playerPosition.y;
-   
+
     if (direction === "left" && playerPosition.x > 32) {
-        newX -= 16;
+      newX -= 16;
     } else if (playerPosition.y > 144 && direction === "up") {
       newY -= 16;
     } else if (playerPosition.x < MAX_X_BOARDER && direction === "right") {
@@ -105,7 +129,7 @@ function App() {
     } else if (playerPosition.y < MAX_Y_BOARDER && direction === "down") {
       newY += 16;
     }
-    setPlayerDirection(direction)
+    setPlayerDirection(direction);
     setPlayers((prevPlayers) => {
       return {
         ...prevPlayers,
@@ -115,7 +139,12 @@ function App() {
     setPlayerPosition({ x: newX, y: newY });
     socket.emit("move", { x: newX, y: newY, playerDirection });
     console.log("newX, newY:", newX, newY);
-    console.log("x, y, direction", playerPosition.x, playerPosition.y, playerDirection);
+    console.log(
+      "x, y, direction",
+      playerPosition.x,
+      playerPosition.y,
+      playerDirection
+    );
   }
 
   // Send the player's position to the server when they move
@@ -129,7 +158,7 @@ function App() {
     setPlayerAttack(true);
     setTimeout(() => setPlayerAttack(false), 200);
   }
-  
+
   function updatePlayerPosition(data) {
     setPlayers({
       ...players,
@@ -149,6 +178,7 @@ function App() {
     delete newPlayers[id];
     setPlayers(newPlayers);
   }
+  console.log("players", players);
 
   return (
     <div className="App">
@@ -158,9 +188,11 @@ function App() {
             key={player.id}
             className="player"
             id={`player-${i}`}
-            style={{ left: `${player.x}px`, top: `${player.y}px` 
-          
-          }}
+            style={{
+              left: `${player.x}px`,
+              top: `${player.y}px`,
+              backgroundColor: player.colour,
+            }}
           ></div>
         ))}
         {gameover && <div>Congratulations! You have won the game!</div>}
