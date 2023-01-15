@@ -38,6 +38,7 @@ const animation = keyframes`
     animation: ${animation} .4s steps(2) infinite; 
   `;
 const Sprite = (props) => {
+  console.log('sprite~~~', props);
   const {direction, top, left} = props;
     if (direction === 'up') {
       return (
@@ -55,7 +56,9 @@ const Sprite = (props) => {
       return (
           <SpriteRight/>
       )
-    };
+    } else {
+      return <SpriteUp/>
+    }
 }
 
 export default Sprite;

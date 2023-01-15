@@ -25,19 +25,19 @@ io.on("connection", (socket) => {
   console.log("A player has connected: ", socket.id);
 
   // Add the new player to the game state
-  players[socket.id] = { x: 0, y: 0, health: 100 };
+  players[socket.id] = { x: 0, y: 0, health: 100, direction: "down" };
 
 
   socket.on("move", (data) => {
     // Update the player's position in the game state
     players[socket.id].x = data.x;
     players[socket.id].y = data.y;
-
     // Broadcast the updated position to all other players
     socket.broadcast.emit("playerMoved", {
       id: socket.id,
       x: data.x,
       y: data.y,
+      direction: data.playerDirection
     });
   });
 

@@ -80,6 +80,7 @@ function App() {
 
     // Update the position of other players when they move
     socket.on("playerMoved", (data) => {
+      // console.log("Player moved", data)
       setPlayers((prevPlayers) => ({
         ...prevPlayers,
         [data.id]: { ...prevPlayers[data.id], x: data.x, y: data.y, direction: data.direction},
@@ -113,16 +114,16 @@ function App() {
   function handleKeyPress(event) {
     if (event.keyCode === 37) {
       movePlayer("left");
-      console.log("Left");
+      // console.log("Left");
     } else if (event.keyCode === 38) {
       movePlayer("up");
-      console.log("Up");
+      // console.log("Up");
     } else if (event.keyCode === 39) {
       movePlayer("right");
-      console.log("Right");
+      // console.log("Right");
     } else if (event.keyCode === 40) {
       movePlayer("down");
-      console.log("Down");
+      // console.log("Down");
     }
   }
   function movePlayer(direction) {
@@ -147,8 +148,8 @@ function App() {
     });
     setPlayerPosition({ x: newX, y: newY });
     socket.emit("move", { x: newX, y: newY, playerDirection });
-    console.log("newX, newY:", newX, newY);
-    console.log("x, y, direction", playerPosition.x, playerPosition.y, playerDirection);
+    // console.log("newX, newY:", newX, newY);
+    // console.log("x, y, direction", playerPosition.x, playerPosition.y, playerDirection);
   }
 
   // Send the player's position to the server when they move
@@ -207,7 +208,6 @@ function App() {
     <div className="App">
       <div className="game-board">
         {Object.values(players).map((player, i) => {
-          // const sprite = getSprite(player.direction, player.id);
             return(
               <div 
               key={player.id} 
