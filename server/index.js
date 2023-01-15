@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
           } else {
             // Broadcast the player is hit
             io.emit("playerHit", id);
+            console.log("Player is hit", id);
           }
         }
       }
