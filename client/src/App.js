@@ -1,14 +1,15 @@
 import "./App.scss";
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
+import Sprite from "./Component/Sprite";
 // import { useSprite } from "react-sprite-animator";
-import styled, { keyframes } from 'styled-components'
+// import styled, { keyframes } from 'styled-components'
 // import spriteImage from "./images/CharAni-Sheet4.png"
 
-import spritePageRight from './moveRight.png'
-import spritePageLeft from './moveLeft.png'
-import spritePageUp from './moveUp.png'
-import spritePageDown from './moveDown.png'
+// import spritePageRight from './moveRight.png'
+// import spritePageLeft from './moveLeft.png'
+// import spritePageUp from './moveUp.png'
+// import spritePageDown from './moveDown.png'
 
 const socket = io.connect("http://localhost:3001");
 const MAX_X_BOARDER = 1331;
@@ -18,38 +19,38 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-const animation = keyframes`
-  100% { background-position: -1000px; }
-`;
+// const animation = keyframes`
+//   100% { background-position: -1000px; }
+// `;
 
-    const SpriteDown = styled.div`
-      height: 30px;
-      width: 36px;
-      position: absolute;
-      background: url(${spritePageDown}) left top;
-      animation: ${animation} .4s steps(2) infinite; 
-    `;    
-    const SpriteUp = styled.div`
-      height: 30px;
-      width: 36px;
-      position: absolute;
-      background: url(${spritePageUp}) left top;
-      animation: ${animation} .4s steps(2) infinite; 
-    `;
-    const SpriteRight = styled.div`
-      height: 30px;
-      width: 36px;
-      position: absolute;
-      background: url(${spritePageRight}) left top;
-      animation: ${animation} .4s steps(2) infinite; 
-    `;
-    const SpriteLeft = styled.div`
-      height: 29px;
-      width: 36px;
-      position: absolute;
-      background: url(${spritePageLeft}) left top;
-      animation: ${animation} .4s steps(2) infinite; 
-    `;
+//     const SpriteDown = styled.div`
+//       height: 30px;
+//       width: 36px;
+//       position: absolute;
+//       background: url(${spritePageDown}) left top;
+//       animation: ${animation} .4s steps(2) infinite; 
+//     `;    
+//     const SpriteUp = styled.div`
+//       height: 30px;
+//       width: 36px;
+//       position: absolute;
+//       background: url(${spritePageUp}) left top;
+//       animation: ${animation} .4s steps(2) infinite; 
+//     `;
+//     const SpriteRight = styled.div`
+//       height: 30px;
+//       width: 36px;
+//       position: absolute;
+//       background: url(${spritePageRight}) left top;
+//       animation: ${animation} .4s steps(2) infinite; 
+//     `;
+//     const SpriteLeft = styled.div`
+//       height: 29px;
+//       width: 36px;
+//       position: absolute;
+//       background: url(${spritePageLeft}) left top;
+//       animation: ${animation} .4s steps(2) infinite; 
+//     `;
 
 function App() {
   const [players, setPlayers] = useState({});
@@ -81,7 +82,7 @@ function App() {
     socket.on("playerMoved", (data) => {
       setPlayers((prevPlayers) => ({
         ...prevPlayers,
-        [data.id]: { ...prevPlayers[data.id], x: data.x, y: data.y },
+        [data.id]: { ...prevPlayers[data.id], x: data.x, y: data.y, direction: data.direction},
       }));
     });
 
@@ -180,25 +181,25 @@ function App() {
     setPlayers(newPlayers);
   }
 
-  const getSprite = (dir, key) => {
-    if (dir === 'up') {
-      return (
-          <SpriteUp key={key}/>
-      )
-    } else if (dir === 'down') {
-      return (
-          <SpriteDown key={key}/>
-      )
-    } else if (dir === 'left') {
-      return (
-          <SpriteLeft key={key}/>
-      )
-    } else if (dir === 'right') {
-      return (
-          <SpriteRight key={key}/>
-      )
-    };
-  };
+  // const getSprite = (dir, key) => {
+  //   if (dir === 'up') {
+  //     return (
+  //         <SpriteUp key={key}/>
+  //     )
+  //   } else if (dir === 'down') {
+  //     return (
+  //         <SpriteDown key={key}/>
+  //     )
+  //   } else if (dir === 'left') {
+  //     return (
+  //         <SpriteLeft key={key}/>
+  //     )
+  //   } else if (dir === 'right') {
+  //     return (
+  //         <SpriteRight key={key}/>
+  //     )
+  //   };
+  // };
 
 
 
@@ -206,15 +207,19 @@ function App() {
     <div className="App">
       <div className="game-board">
         {Object.values(players).map((player, i) => {
-          const sprite = getSprite(player.direction, player.id);
+          // const sprite = getSprite(player.direction, player.id);
             return(
-              <div
-                key={player.id}
-                className="player"
-                id={`player-${i}`}
-                style={{ left: `${player.x}px`, top: `${player.y}px`}}
+              <div 
+              key={player.id} 
+              className="player" 
+              id={`player-${i}`}
+              style={{ left: `${player.x}px`, top: `${player.y}px`}}
               >
-                {sprite}
+                <Sprite 
+                  direction={player.direction} 
+                  top={player.y} 
+                  left={player.x}
+                  />
               </div>
             )
         })}
