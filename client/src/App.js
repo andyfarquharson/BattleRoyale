@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import io from "socket.io-client";
 
 const socket = io.connect("http://localhost:3001");
+
 const MAX_X_BOARDER = 1344;
 const MAX_Y_BOARDER = 736;
 
@@ -17,6 +18,7 @@ function App() {
   const [playerId, setPlayerId] = useState(null);
   const [playerDirection, setPlayerDirection] = useState("down");
   const [playerAttack, setPlayerAttack] = useState()
+  const [gameover, setGameOver] = useState(false);
   const [playerPosition, setPlayerPosition] = useState({
     x: getRandom(32, MAX_X_BOARDER),
     y: getRandom(32, MAX_Y_BOARDER),
@@ -64,6 +66,10 @@ function App() {
         return newPlayers;
       });
     });
+
+    if (Object.keys(players).length === 1) {
+      setGameOver(true);
+    }
 
     document.addEventListener("keydown", handleKeyPress);
     return () => {
@@ -157,6 +163,7 @@ function App() {
           }}
           ></div>
         ))}
+        {gameover && <div>Congratulations! You have won the game!</div>}
       </div>
     </div>
   );
